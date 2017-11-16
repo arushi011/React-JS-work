@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <!--<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/react/0.13.3/react.js'></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.3/JSXTransformer.js"></script>-->
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.6.1/react.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.6.1/react-dom.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.js"></script>
+    <style>
+    .blueBox{
+        background-color:yellowgreen;
+        width: 200px;
+        padding: 10px 10px 10px 30px;
+        }
+    .baconBox{
+              
+        }
+    .blueButton , .greenButton , .redButton , .purpleButton {
+            font-size: 16px;
+            margin: 5px 10px 0 0;
+            padding:10px;
+            font-weight: bold;
+            color:white;
+            border-style: none;
+        }
+        .blueButton{
+            background-color:cornflowerblue;
+        }
+        .greenButton{
+            background-color:chartreuse;
+        }
+        .redButton{
+            background-color:brown;
+        }
+        .purpleButton{
+            background-color:blueviolet;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div id="app"></div>
+    <script type="text/babel">
+
+        var Bacon = React.createClass({ 
+            getInitialState : function(){
+                return {editing: false}
+            },
+            edit : function(){
+                this.setState({editing : !this.state.editing})
+            },
+            remove: function(){
+                this.props.deleteBacon(this.props.index); //its a callback kinda // here this is of Bacon
+            },
+            save : function(){
+                //var val = this.refs.newText.value;
+                this.props.updateBaconText(this.refs.newText.value,this.props.index);
+                this.setState({editing : !this.state.editing});
+            },
+            renderNormal : function(){
+                return(
+                    <div className="baconBox">
+                    <h3>{this.props.children}</h3>
+                    <button onClick={this.edit} className="blueButton">Edit</button>
+                    <button onClick={this.remove} className="redButton">Delete</button>
+                    </div>
+                );
+            },
+            renderForm : function(){
+                return(
+                    <div className="baconBox">
+                    <textarea ref="newText" defaultValue={this.props.children}></textarea>
+                    <button onClick={this.save} className="greenButton">save</button>
+                    <button onClick={this.remove} className="redButton">Delete</button>
+                    </div>
+                );
+            },
+            render : function(){
+                if(this.state.editing){
+                return this.renderForm();
+                }else{
+                return this.renderNormal();
+                }  
+            } 
+        });
+
+        var Board = React.createClass({
+            getInitialState : function(){
+                return{
+                    BaconsArray : [
+                            "I like bacon",
+                            "I like ice-cream",
+                            "Look its pasta"      
+                    ] //this array is a state
+                }
+            },
+            removeBacon : function(i){
+                var arrBacon = this.state.BaconsArray;
+                arrBacon.splice(i,1);
+                this.setState({BaconsArray : arrBacon});
+            },
+            addBacons: function(food){
+                var arrBacon = this.state.BaconsArray;
+                arrBacon.push(food);
+                this.setState({BaconsArray : arrBacon});
+            },
+            updateBacon : function(food , i){
+                var arrBacon = this.state.BaconsArray;
+                arrBacon[i] = food;
+                this.setState({BaconsArray : arrBacon});
+            },
+            mapBacons : function( food , i){
+                return(
+                        
+                        <Bacon key={i} index={i} updateBaconText={this.updateBacon} deleteBacon={this.removeBacon}>
+                        {food}
+                        </Bacon> //updateBaconText and DeleteBacon are just properties equating to some function and not click events
+                      ); //index is created by us u can name it anything u like //here this is of Board
+            },
+            render : function(){
+                return(
+                    <div className="blueBox">
+                       <button onClick={this.addBacons.bind(null, "Default Value")} className="purpleButton">Add new</button>
+                        {
+                            this.state.BaconsArray.map(this.mapBacons) //no calling brackets here like () cuz it is a property not a fn call
+                        } 
+                    </div>
+                );
+            }
+        });
+
+ReactDOM.render(<Board />, document.getElementById('app'));
+    </script>
+
+</body>
+
+</html>
